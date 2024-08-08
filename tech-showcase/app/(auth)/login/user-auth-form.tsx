@@ -28,7 +28,7 @@ type LoginData = {
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<string | null>(null); // Manage loading state for each action
   const [error, setError] = React.useState<string | null>(null);
 
   const {
@@ -40,7 +40,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   });
 
   const onSubmit: SubmitHandler<LoginData> = async (data) => {
-    setIsLoading(true);
+    setLoading("form");
     setError(null);
     try {
       const response = await signIn(
@@ -60,9 +60,21 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       const error = err as ErrorResponse;
       setError(error.response?.data?.message || "Something went wrong");
     } finally {
-      setIsLoading(false);
+      setLoading(null);
     }
   };
+
+  const handleSocialSignIn = async (provider: string) => {
+    setLoading(provider);
+    try {
+      await signIn(provider, { callbackUrl: "http://localhost:3000" });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -78,7 +90,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
-              disabled={isLoading}
+              disabled={loading === "form"}
               {...register("email")}
             />
             {errors.email && (
@@ -96,7 +108,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               autoCapitalize="none"
               autoComplete="password"
               autoCorrect="off"
-              disabled={isLoading}
+              disabled={loading === "form"}
               {...register("password")}
             />
             {errors.password && (
@@ -105,8 +117,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               </p>
             )}
           </div>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading && (
+          <Button type="submit" disabled={loading === "form"}>
+            {loading === "form" && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
             Sign In
@@ -136,19 +148,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         <Button
           variant="outline"
           type="button"
-          disabled={isLoading}
-          onClick={async () => {
-            setIsLoading(true);
-            try {
-              await signIn("google", { callbackUrl: "http://localhost:3000" });
-            } catch (error) {
-              console.error(error);
-            } finally {
-              setIsLoading(false);
-            }
-          }}
+          disabled={loading === "google"}
+          onClick={() => handleSocialSignIn("google")}
         >
-          {isLoading ? (
+          {loading === "google" ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             <Icons.google className="mr-2 h-4 w-4" />
@@ -158,19 +161,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         <Button
           variant="outline"
           type="button"
-          disabled={isLoading}
-          onClick={async () => {
-            setIsLoading(true);
-            try {
-              await signIn("github", { callbackUrl: "http://localhost:3000" });
-            } catch (error) {
-              console.error(error);
-            } finally {
-              setIsLoading(false);
-            }
-          }}
+          disabled={loading === "github"}
+          onClick={() => handleSocialSignIn("github")}
         >
-          {isLoading ? (
+          {loading === "github" ? (
             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             <Icons.gitHub className="mr-2 h-4 w-4" />
