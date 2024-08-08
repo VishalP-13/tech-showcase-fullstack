@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-import { UserAuthForm } from "@/app/(auth)/login/user-auth-form";
+import { LoginForm } from "@/app/(auth)/login/login-form";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
@@ -21,7 +21,7 @@ export default async function AuthenticationPage() {
               Enter your details below to login to your account
             </p>
           </div>
-          <UserAuthForm />
+          <LoginForm />
           <p className="px-8 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link

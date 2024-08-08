@@ -27,7 +27,7 @@ type LoginData = {
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+export function LoginForm({ className, ...props }: UserAuthFormProps) {
   const [loading, setLoading] = React.useState<string | null>(null); // Manage loading state for each action
   const [error, setError] = React.useState<string | null>(null);
 
