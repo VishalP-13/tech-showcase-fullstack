@@ -12,8 +12,6 @@ import { Label } from "@/components/ui/label";
 import { signIn } from "next-auth/react";
 import { ErrorResponse } from "@/lib/types";
 import Link from "next/link";
-// import axios from "axios";
-// import { loginUser } from "@/lib/actions";
 
 // Define the validation schema using Zod
 const schema = z.object({

@@ -2,13 +2,6 @@
 
 import axios from "axios";
 
-export const loginUser = async (data: { email: string; password: string }) => {
-  const response = await axios.post("http://localhost:8080/user/login", data);
-  if (response.status !== 200) {
-    throw new Error("Network response was not ok");
-  }
-};
-
 export const fetchPhotos = async () => {
   const response = await axios.get(
     "https://jsonplaceholder.typicode.com/photos",

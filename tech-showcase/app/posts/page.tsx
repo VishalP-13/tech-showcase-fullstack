@@ -6,8 +6,12 @@ import { fetchPosts } from "@/lib/actions";
 import { useQuery } from "@tanstack/react-query";
 import { Post } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton"; // Import the Skeleton component from ShadCn
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const router = useRouter();
+
   const {
     data: posts,
     isLoading,
@@ -30,7 +34,16 @@ const Page = () => {
   return (
     <section className="py-24">
       <div className="container">
-        <h1 className="mb-6 text-3xl font-bold">All Posts</h1>
+        <div className="flex">
+          <h1 className="mb-6 text-3xl font-bold">All Posts</h1>
+          <Button
+            variant={"outline"}
+            className="mr-0 ml-auto"
+            onClick={() => router.push("/posts/user")}
+          >
+            Register User
+          </Button>
+        </div>
         {isLoading ? (
           <div className="space-y-4">
             {Array(5)

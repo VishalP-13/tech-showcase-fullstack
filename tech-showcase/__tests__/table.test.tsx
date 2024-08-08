@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
-import Page from "../page"; // Adjust this import path as needed
+import Page from "@/app/posts/page"; // Adjust this import path as needed
 
 jest.mock("axios");
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { SignupForm } from "../signup-form";
+import { SignupForm } from "@/app/(auth)/signup/signup-form";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
