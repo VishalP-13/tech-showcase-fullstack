@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-import { UserAuthForm } from "@/components/user-auth-form";
+import { UserAuthForm } from "@/app/(auth)/login/user-auth-form";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
