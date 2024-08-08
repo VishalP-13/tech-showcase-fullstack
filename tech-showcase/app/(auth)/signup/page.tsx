@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { SignupForm } from "./signup-form";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import React from "react";
+import { UserForm } from "@/components/user-form";
 
 export default async function SignupPage() {
   const session = await getServerSession(authOptions);
+  console.log(session)
   if (session?.user) redirect("/");
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
@@ -20,7 +21,7 @@ export default async function SignupPage() {
               Enter your details below to create your account
             </p>
           </div>
-          <SignupForm />
+          <UserForm mode="signup" className="your-signup-form-class" />;
           <p className="px-8 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link

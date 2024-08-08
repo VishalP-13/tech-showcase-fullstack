@@ -51,7 +51,7 @@ describe("SignupForm", () => {
         screen.getByText(/password must be at least 6 characters long/i),
       ).toBeInTheDocument();
     });
-  });
+  }); 
 
   test("Submits the form with valid input", async () => {
     (axios.post as jest.Mock).mockResolvedValueOnce({

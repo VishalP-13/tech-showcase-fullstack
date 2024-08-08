@@ -1,5 +1,5 @@
 import React from "react";
-import { UserRegisterForm } from "./user-register-form";
+import { UserForm } from "@/components/user-form";
 
 export default async function UserRegisterPage() {
   return (
@@ -14,7 +14,7 @@ export default async function UserRegisterPage() {
               Enter your details below to register your user
             </p>
           </div>
-          <UserRegisterForm />
+          <UserForm mode="register" className="your-register-form-class" />;
         </div>
       </div>
     </div>

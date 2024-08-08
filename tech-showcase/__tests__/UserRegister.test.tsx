@@ -66,7 +66,7 @@ describe("UserRegisterForm", () => {
     });
 
     render(<UserRegisterForm />);
-
+ 
     fireEvent.input(screen.getByPlaceholderText(/name/i), {
       target: { value: "John Doe" },
     });

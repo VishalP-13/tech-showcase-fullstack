@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { CircleArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PrivacyContent, TermsContent } from "@/components/terms-privacy";
+import { useRouter } from "next/navigation";
 
 const TermsAndPrivacy = () => {
   const [activeTab, setActiveTab] = useState("terms");
-
+  const router = useRouter();
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="flex flex-col md:flex-row mb-4">
@@ -50,12 +50,12 @@ const TermsAndPrivacy = () => {
 
       <div className="flex mt-4 text-md">
         <div>
-          <Link href="/">
+          <Button variant={"ghost"} onClick={() => router.back()}>
             <div className="flex items-center">
               <CircleArrowLeft className="h-7 w-5 mr-1" />
-              <span>Return to Home</span>
+              <span>Back</span>
             </div>
-          </Link>
+          </Button>
         </div>
       </div>
     </div>

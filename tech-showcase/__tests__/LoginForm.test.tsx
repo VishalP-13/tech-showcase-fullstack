@@ -21,7 +21,7 @@ describe("LoginForm", () => {
     expect(screen.getByRole("button", { name: /github/i })).toBeInTheDocument();
     expect(screen.getByText(/forgot password\?/i)).toBeInTheDocument();
     })
-  });
+  }); 
 
   test("displays validation errors on invalid input", async () => {
     render(<LoginForm />);
