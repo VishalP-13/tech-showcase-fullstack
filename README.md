@@ -109,3 +109,13 @@ To lint the code, run:
 ```bash
 npm run lint
 ```
+### Testing
+
+To run the tests in simple mode:
+```bash
+npm run test
+```
+To run the tests in watch mode:
+```bash
+npm run test:watch
+```
