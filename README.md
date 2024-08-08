@@ -102,8 +102,10 @@ The frontend is built with Next.js and styled using Shadcn components and Tailwi
 To format all documents in the project, run:
 ```bash
 npm run format
+```
 
 ### Linting
 To lint the code, run:
 ```bash
 npm run lint
+```
