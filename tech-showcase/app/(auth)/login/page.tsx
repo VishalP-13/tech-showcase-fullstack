@@ -21,7 +21,7 @@ export default async function AuthenticationPage() {
               Enter your details below to login to your account
             </p>
           </div>
-          <UserForm mode="login" className="your-login-form-class" />
+          <UserForm mode="login" />
           <p className="px-8 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link
