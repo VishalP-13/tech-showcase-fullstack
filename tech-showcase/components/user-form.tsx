@@ -168,7 +168,6 @@ export function UserForm({
               id="password"
               placeholder="Password"
               type={showPassword ? "text" : "password"}
-              //   type="password"
               autoCapitalize="none"
               autoComplete="password"
               autoCorrect="off"
@@ -178,9 +177,8 @@ export function UserForm({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+              disabled={loading !== null || !!user}
               className="absolute ml-[320px] pt-2 flex items-center text-gray-500"
-              // className="absolute pl-[320px] pt-2 flex items-center text-gray-500"
-
               style={{ pointerEvents: "all" }}
             >
               {showPassword ? <EyeOff /> : <Eye />}
