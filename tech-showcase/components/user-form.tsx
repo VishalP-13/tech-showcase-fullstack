@@ -43,7 +43,6 @@ interface UserFormProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function UserForm({ mode, className, onSuccess, ...props }: UserFormProps) {
-//   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<string | null>(null); // Manage loading state for each action
   const [error, setError] = React.useState<string | null>(null);
   const [user, setUser] = React.useState<FormData | null>(null);
@@ -230,7 +229,7 @@ export function UserForm({ mode, className, onSuccess, ...props }: UserFormProps
       )}
       {user && mode === "register" && (
         <div className="mt-4 p-4 border rounded">
-          <h2 className="text-xl font-semibold text-green-900">
+          <h2 className="text-xl mb-[28px] font-semibold text-green-900">
             User Registered Successfully ✅
           </h2>
           <p>
