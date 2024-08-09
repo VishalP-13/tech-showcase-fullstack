@@ -7,7 +7,6 @@ import { UserForm } from "@/components/user-form";
 
 export default async function SignupPage() {
   const session = await getServerSession(authOptions);
-  console.log(session)
   if (session?.user) redirect("/");
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">

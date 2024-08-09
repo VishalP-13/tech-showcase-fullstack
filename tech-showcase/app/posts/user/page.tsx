@@ -14,7 +14,7 @@ export default async function UserRegisterPage() {
               Enter your details below to register your user
             </p>
           </div>
-          <UserForm mode="register" />;
+          <UserForm mode="register" />
         </div>
       </div>
     </div>

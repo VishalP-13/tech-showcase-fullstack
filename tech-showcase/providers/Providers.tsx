@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 import { Session } from "@/lib/types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-// import AuthLayout from "../../layouts/AuthLayout";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -20,9 +19,7 @@ const Providers = ({ children, session }: ProvidersProps) => {
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
-        {/* <AuthLayout> */}
         {children}
-        {/* </AuthLayout> */}
       </QueryClientProvider>
     </SessionProvider>
   );

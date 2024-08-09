@@ -14,22 +14,26 @@ import { ErrorResponse } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 const getSchema = (mode: "signup" | "register" | "login") => {
-    if (mode === "login") {
-      return z.object({
-        name: z.string().optional(),
-        email: z.string().email("Invalid email address"),
-        password: z.string().min(6, "Password must be at least 6 characters long"),
-      });
-    } else {
-      return z.object({
-        name: z.string().min(1, "Name is required"),
-        email: z.string().email("Invalid email address"),
-        password: z.string().min(6, "Password must be at least 6 characters long"),
-      });
-    }
-  };
+  if (mode === "login") {
+    return z.object({
+      email: z.string().email("Invalid email address"),
+      password: z
+        .string()
+        .min(6, "Password must be at least 6 characters long"),
+    });
+  } else {
+    return z.object({
+      name: z.string().min(1, "Name is required"),
+      email: z.string().email("Invalid email address"),
+      password: z
+        .string()
+        .min(6, "Password must be at least 6 characters long"),
+    });
+  }
+};
 
 type FormData = {
   name?: string;
@@ -42,10 +46,18 @@ interface UserFormProps extends React.HTMLAttributes<HTMLDivElement> {
   onSuccess?: () => void;
 }
 
-export function UserForm({ mode, className, onSuccess, ...props }: UserFormProps) {
+export function UserForm({
+  mode,
+  className,
+  onSuccess,
+  ...props
+}: UserFormProps) {
   const [loading, setLoading] = React.useState<string | null>(null); // Manage loading state for each action
   const [error, setError] = React.useState<string | null>(null);
   const [user, setUser] = React.useState<FormData | null>(null);
+  const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  const [showRegisteredPassword, setShowRegisteredPassword] =
+    React.useState<boolean>(false);
 
   const router = useRouter();
 
@@ -155,13 +167,24 @@ export function UserForm({ mode, className, onSuccess, ...props }: UserFormProps
             <Input
               id="password"
               placeholder="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
+              //   type="password"
               autoCapitalize="none"
               autoComplete="password"
               autoCorrect="off"
               disabled={loading !== null || !!user}
               {...register("password")}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute ml-[320px] pt-2 flex items-center text-gray-500"
+              // className="absolute pl-[320px] pt-2 flex items-center text-gray-500"
+
+              style={{ pointerEvents: "all" }}
+            >
+              {showPassword ? <EyeOff /> : <Eye />}
+            </button>
             {errors.password && (
               <p className="text-red-600">
                 {errors.password?.message as string}
@@ -172,7 +195,11 @@ export function UserForm({ mode, className, onSuccess, ...props }: UserFormProps
             {loading === "credentials" && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            {mode === "signup" ? "Sign Up" : mode === "register" ? "Register" : "Sign In"}
+            {mode === "signup"
+              ? "Sign Up"
+              : mode === "register"
+                ? "Register"
+                : "Sign In"}
           </Button>
           {error && <p className="text-red-600">{error}</p>}
         </div>
@@ -229,7 +256,7 @@ export function UserForm({ mode, className, onSuccess, ...props }: UserFormProps
       )}
       {user && mode === "register" && (
         <div className="mt-4 p-4 border rounded">
-          <h2 className="text-xl mb-[28px] font-semibold text-green-900">
+          <h2 className="text-xl mb-4 font-semibold text-green-900">
             User Registered Successfully ✅
           </h2>
           <p>
@@ -238,6 +265,20 @@ export function UserForm({ mode, className, onSuccess, ...props }: UserFormProps
           <p>
             <strong>Email:</strong> {user.email}
           </p>
+          <div className="flex items-center">
+            <strong>Password:</strong>
+            <span className="ml-2">
+              {showRegisteredPassword
+                ? user.password
+                : user.password.replace(/./g, "*")}
+            </span>
+            <button
+              onClick={() => setShowRegisteredPassword(!showRegisteredPassword)}
+              className="ml-2 text-blue-500"
+            >
+              {showRegisteredPassword ? <EyeOff /> : <Eye />}
+            </button>
+          </div>
           <Button
             onClick={() => {
               setUser(null);

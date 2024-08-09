@@ -1,5 +1,11 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -31,7 +37,9 @@ describe("UserForm", () => {
     expect(screen.getByPlaceholderText(/name/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sign up/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign up/i }),
+    ).toBeInTheDocument();
     cleanup();
 
     // Test for register mode
@@ -39,7 +47,9 @@ describe("UserForm", () => {
     expect(screen.getByPlaceholderText(/name/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /register/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /register/i }),
+    ).toBeInTheDocument();
     cleanup();
 
     // Test for login mode
@@ -47,7 +57,9 @@ describe("UserForm", () => {
     expect(screen.queryByPlaceholderText(/name/i)).toBeNull();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign in/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /google/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /github/i })).toBeInTheDocument();
   });
@@ -61,7 +73,7 @@ describe("UserForm", () => {
       expect(screen.getByText(/name is required/i)).toBeInTheDocument();
       expect(screen.getByText(/invalid email address/i)).toBeInTheDocument();
       expect(
-        screen.getByText(/password must be at least 6 characters long/i)
+        screen.getByText(/password must be at least 6 characters long/i),
       ).toBeInTheDocument();
     });
   });
@@ -130,12 +142,15 @@ describe("UserForm", () => {
     fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
 
     await waitFor(() => {
-      expect(signIn).toHaveBeenCalledWith("credentials", {
-        email: "john.doe@example.com",
-        password: "password123",
-        redirect: true,
-      },
-      { callbackUrl: "http://localhost:3000" });
+      expect(signIn).toHaveBeenCalledWith(
+        "credentials",
+        {
+          email: "john.doe@example.com",
+          password: "password123",
+          redirect: true,
+        },
+        { callbackUrl: "http://localhost:3000" },
+      );
     });
   });
 
@@ -181,7 +196,6 @@ describe("UserForm", () => {
       });
     });
   });
-
 
   test("submits the form with valid input in register mode", async () => {
     (axios.post as jest.Mock).mockResolvedValueOnce({
