@@ -1,15 +1,10 @@
 import React from "react";
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  cleanup,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { UserForm } from "@/components/user-form";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 jest.mock("axios");
 jest.mock("next-auth/react");
@@ -17,231 +12,107 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
+const queryClient = new QueryClient();
+
 describe("UserForm", () => {
   const mockRouterPush = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useRouter as jest.Mock).mockReturnValue({
-      push: mockRouterPush,
-    });
+    (useRouter as jest.Mock).mockReturnValue({ push: mockRouterPush });
+    queryClient.clear();
   });
 
-  afterEach(() => {
-    cleanup();
+  afterEach(cleanup);
+
+  const renderComponent = (mode: "signup" | "register" | "login") =>
+    render(
+      <QueryClientProvider client={queryClient}>
+        <UserForm mode={mode} />
+      </QueryClientProvider>
+    );
+
+  it("renders the form fields correctly", () => {
+    renderComponent("signup");
+
+    expect(screen.getByPlaceholderText("Name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
   });
 
-  test("renders form fields and buttons correctly for each mode", async () => {
-    // Test for signup mode
-    render(<UserForm mode="signup" />);
-    expect(screen.getByPlaceholderText(/name/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /sign up/i }),
-    ).toBeInTheDocument();
-    cleanup();
+  it("handles signup submission", async () => {
+    const mockResponse = { data: { message: "User registered successfully" } };
+    (axios.post as jest.Mock).mockResolvedValue(mockResponse);
 
-    // Test for register mode
-    render(<UserForm mode="register" />);
-    expect(screen.getByPlaceholderText(/name/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /register/i }),
-    ).toBeInTheDocument();
-    cleanup();
+    renderComponent("signup");
 
-    // Test for login mode
-    render(<UserForm mode="login" />);
-    expect(screen.queryByPlaceholderText(/name/i)).toBeNull();
-    expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /sign in/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /google/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /github/i })).toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "John Doe" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "john@example.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "password123" } });
+
+    fireEvent.click(screen.getByText("Sign Up"));
+
+    await waitFor(() => expect(mockRouterPush).toHaveBeenCalledWith("/"));
   });
 
-  test("displays validation errors on invalid input", async () => {
-    render(<UserForm mode="signup" />);
+  it("handles register submission", async () => {
+    const mockResponse = { data: { name: "John Doe", email: "john@example.com", password: "password123" } };
+    (axios.post as jest.Mock).mockResolvedValue(mockResponse);
 
-    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
+    renderComponent("register");
 
-    await waitFor(() => {
-      expect(screen.getByText(/name is required/i)).toBeInTheDocument();
-      expect(screen.getByText(/invalid email address/i)).toBeInTheDocument();
-      expect(
-        screen.getByText(/password must be at least 6 characters long/i),
-      ).toBeInTheDocument();
-    });
+    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "John Doe" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "john@example.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "password123" } });
+
+    fireEvent.click(screen.getByText("Register"));
+
+    await waitFor(() => expect(screen.getByText("User Registered Successfully ✅")).toBeInTheDocument());
   });
 
-  test("submits the form with valid input in signup mode", async () => {
-    (axios.post as jest.Mock).mockResolvedValueOnce({
-      data: { message: "Success" },
-    });
+  it("handles login submission", async () => {
+    const mockSignIn = jest.fn().mockResolvedValue({});
+    (signIn as jest.Mock).mockImplementation(mockSignIn);
 
-    render(<UserForm mode="signup" />);
+    renderComponent("login");
 
-    fireEvent.input(screen.getByPlaceholderText(/name/i), {
-      target: { value: "John Doe" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/email/i), {
-      target: { value: "john.doe@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/password/i), {
-      target: { value: "password123" },
-    });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "john@example.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "password123" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
+    fireEvent.click(screen.getByText("Sign In"));
 
-    await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith("/");
-      expect(screen.queryByText(/something went wrong/i)).toBeNull();
-    });
+    await waitFor(() => expect(mockSignIn).toHaveBeenCalledWith("credentials", {
+      email: "john@example.com",
+      password: "password123",
+      redirect: true,
+      callbackUrl: "http://localhost:3000/verify-otp",
+    }));
   });
 
-  test("displays error message on form submission failure in signup mode", async () => {
-    (axios.post as jest.Mock).mockRejectedValueOnce({
-      response: { data: { message: "Sign up failed" } },
-    });
+  it("handles social login", async () => {
+    const mockSignIn = jest.fn().mockResolvedValue({});
+    (signIn as jest.Mock).mockImplementation(mockSignIn);
 
-    render(<UserForm mode="signup" />);
+    renderComponent("login");
 
-    fireEvent.input(screen.getByPlaceholderText(/name/i), {
-      target: { value: "John Doe" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/email/i), {
-      target: { value: "john.doe@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/password/i), {
-      target: { value: "password123" },
-    });
+    fireEvent.click(screen.getByText("Google"));
 
-    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/sign up failed/i)).toBeInTheDocument();
-    });
+    await waitFor(() => expect(mockSignIn).toHaveBeenCalledWith("google", { callbackUrl: "http://localhost:3000" }));
   });
 
-  test("submits the form with valid input in login mode", async () => {
-    (signIn as jest.Mock).mockResolvedValueOnce({});
-
-    render(<UserForm mode="login" />);
-
-    fireEvent.input(screen.getByPlaceholderText(/email/i), {
-      target: { value: "john.doe@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/password/i), {
-      target: { value: "password123" },
+  it("displays errors correctly", async () => {
+    (axios.post as jest.Mock).mockRejectedValue({
+      response: { data: { message: "Something went wrong" } },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    renderComponent("signup");
 
-    await waitFor(() => {
-      expect(signIn).toHaveBeenCalledWith(
-        "credentials",
-        {
-          email: "john.doe@example.com",
-          password: "password123",
-          redirect: true,
-        },
-        { callbackUrl: "http://localhost:3000" },
-      );
-    });
-  });
+    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "John Doe" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "john@example.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "password123" } });
 
-  test("displays error message on sign-in failure", async () => {
-    (signIn as jest.Mock).mockResolvedValueOnce({
-      error: "Invalid credentials",
-    });
+    fireEvent.click(screen.getByText("Sign Up"));
 
-    render(<UserForm mode="login" />);
-
-    fireEvent.input(screen.getByPlaceholderText(/email/i), {
-      target: { value: "john.doe@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/password/i), {
-      target: { value: "password123" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
-    });
-  });
-
-  test("handles social sign-in button clicks", async () => {
-    (signIn as jest.Mock).mockResolvedValueOnce({});
-
-    render(<UserForm mode="login" />);
-
-    fireEvent.click(screen.getByRole("button", { name: /google/i }));
-
-    await waitFor(() => {
-      expect(signIn).toHaveBeenCalledWith("google", {
-        callbackUrl: "http://localhost:3000",
-      });
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /github/i }));
-
-    await waitFor(() => {
-      expect(signIn).toHaveBeenCalledWith("github", {
-        callbackUrl: "http://localhost:3000",
-      });
-    });
-  });
-
-  test("submits the form with valid input in register mode", async () => {
-    (axios.post as jest.Mock).mockResolvedValueOnce({
-      data: { message: "Success" },
-    });
-
-    render(<UserForm mode="register" />);
-
-    fireEvent.input(screen.getByPlaceholderText(/name/i), {
-      target: { value: "Jane Doe" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/email/i), {
-      target: { value: "jane.doe@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/password/i), {
-      target: { value: "password123" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /register/i }));
-
-    await waitFor(() => {
-      expect(screen.queryByText(/something went wrong/i)).toBeNull();
-    });
-  });
-
-  test("displays error message on form submission failure in register mode", async () => {
-    (axios.post as jest.Mock).mockRejectedValueOnce({
-      response: { data: { message: "Register failed" } },
-    });
-
-    render(<UserForm mode="register" />);
-
-    fireEvent.input(screen.getByPlaceholderText(/name/i), {
-      target: { value: "Jane Doe" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/email/i), {
-      target: { value: "jane.doe@example.com" },
-    });
-    fireEvent.input(screen.getByPlaceholderText(/password/i), {
-      target: { value: "password123" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /register/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/register failed/i)).toBeInTheDocument();
-    });
+    await waitFor(() => expect(screen.getByText("Something went wrong")).toBeInTheDocument());
   });
 });

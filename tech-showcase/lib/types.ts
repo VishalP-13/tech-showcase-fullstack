@@ -58,3 +58,9 @@ export type Post = {
   title: string;
   body: string;
 };
+
+export type UserFormData = {
+  name?: string;
+  email: string;
+  password: string;
+};

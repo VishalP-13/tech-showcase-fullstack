@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,19 +10,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { Icons } from "@/components/ui/icons";
-import { ErrorResponse } from "@/lib/types";
+import { ErrorResponse, UserFormData } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { useDispatch } from 'react-redux';
+import { login } from "@/redux/userSlice";
 
-const getSchema = (mode: "signup" | "register" | "login") => {
-  if (mode === "login") {
+const getSchema = (mode: "signup" | "register" | "login" | "resetPassword") => {
+  if (mode === "login" || mode === "resetPassword") {
     return z.object({
       email: z.string().email("Invalid email address"),
-      password: z
-        .string()
-        .min(6, "Password must be at least 6 characters long"),
+      ...(mode === "login" && {
+        password: z
+          .string()
+          .min(6, "Password must be at least 6 characters long"),
+      }),
     });
   } else {
     return z.object({
@@ -35,14 +40,8 @@ const getSchema = (mode: "signup" | "register" | "login") => {
   }
 };
 
-type FormData = {
-  name?: string;
-  email: string;
-  password: string;
-};
-
 interface UserFormProps extends React.HTMLAttributes<HTMLDivElement> {
-  mode: "signup" | "register" | "login";
+  mode: "signup" | "register" | "login" | "resetPassword";
   onSuccess?: () => void;
 }
 
@@ -52,58 +51,112 @@ export function UserForm({
   onSuccess,
   ...props
 }: UserFormProps) {
-  const [loading, setLoading] = React.useState<string | null>(null); // Manage loading state for each action
-  const [error, setError] = React.useState<string | null>(null);
-  const [user, setUser] = React.useState<FormData | null>(null);
-  const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  const [loading, setLoading] = useState<string | null>(null); // Manage loading state for each action
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<UserFormData | null>(null);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showRegisteredPassword, setShowRegisteredPassword] =
-    React.useState<boolean>(false);
+    useState<boolean>(false);
 
   const router = useRouter();
-
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<FormData>({
+  } = useForm<UserFormData>({
     resolver: zodResolver(getSchema(mode)),
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    setLoading("credentials");
-    setError(null);
-    try {
-      if (mode === "signup") {
-        await axios.post("http://localhost:8080/user/signup", data);
-        router.push("/");
-      } else if (mode === "register") {
-        const response = await axios.post(
-          "https://jsonplaceholder.typicode.com/posts",
-          data,
-        );
-        setUser(response.data);
-      } else if (mode === "login") {
-        const response = await signIn(
-          "credentials",
-          {
-            email: data.email,
-            password: data.password,
-            redirect: true,
-          },
-          { callbackUrl: "http://localhost:3000" },
-        );
-
-        if (response?.error) {
-          setError(response.error);
-        }
-      }
+  const signUpMutation = useMutation<void, Error, UserFormData>({
+    mutationFn: async (data: UserFormData) => {
+      const response = await axios.post(
+        "http://localhost:8080/user/signup",
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      router.push("/");
       if (onSuccess) onSuccess();
-    } catch (err) {
+      setLoading(null);
+    },
+    onError: (err) => {
       const error = err as ErrorResponse;
       setError(error.response?.data?.message || "Something went wrong");
-    } finally {
       setLoading(null);
+    },
+  });
+
+  const registerMutation = useMutation<UserFormData, Error, UserFormData>({
+    mutationFn: async (data: UserFormData) => {
+      const response = await axios.post(
+        "https://jsonplaceholder.typicode.com/posts",
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setUser(data);
+      if (onSuccess) onSuccess();
+      setLoading(null);
+    },
+    onError: (err) => {
+      const error = err as ErrorResponse;
+      setError(error.response?.data?.message || "Something went wrong");
+      setLoading(null);
+    },
+  });
+
+  const loginMutation = useMutation<void, Error, UserFormData>({
+    mutationFn: async (data: UserFormData) => {
+      dispatch(login({ email: data.email, password: data.password}))
+      await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: true,
+        callbackUrl: "http://localhost:3000",
+      });
+    },
+    onSuccess: () => {
+      if (onSuccess) onSuccess();
+      setLoading(null);
+    },
+    onError: (err) => {
+      const error = err as ErrorResponse;
+      setError(error.response?.data?.message || "Something went wrong");
+      setLoading(null);
+    },
+  });
+
+  const resetPasswordMutation = useMutation<void, Error, { email: string }>({
+    mutationFn: async (data: { email: string }) => {
+      await axios.post("http://localhost:8080/user/reset-password", data);
+    },
+    onSuccess: () => {
+      router.push("/login");
+      if (onSuccess) onSuccess();
+      setLoading(null);
+    },
+    onError: (err) => {
+      const error = err as ErrorResponse;
+      setError(error.response?.data?.message || "Something went wrong");
+      setLoading(null);
+    },
+  });
+
+  const onSubmit: SubmitHandler<UserFormData> = (data) => {
+    setLoading("credentials");
+    setError(null);
+    if (mode === "signup") {
+      signUpMutation.mutate(data);
+    } else if (mode === "register") {
+      registerMutation.mutate(data);
+    } else if (mode === "login") {
+      loginMutation.mutate(data);
+    } else if (mode === "resetPassword") {
+      resetPasswordMutation.mutate({ email: data.email });
     }
   };
 
@@ -122,7 +175,7 @@ export function UserForm({
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-2">
-          {mode !== "login" && (
+          {mode !== "login" && mode !== "resetPassword" && (
             <div className="grid gap-1">
               <Label className="sr-only" htmlFor="name">
                 Name
@@ -160,35 +213,37 @@ export function UserForm({
               <p className="text-red-600">{errors.email?.message as string}</p>
             )}
           </div>
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="password">
-              Password
-            </Label>
-            <Input
-              id="password"
-              placeholder="Password"
-              type={showPassword ? "text" : "password"}
-              autoCapitalize="none"
-              autoComplete="password"
-              autoCorrect="off"
-              disabled={loading !== null || !!user}
-              {...register("password")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              disabled={loading !== null || !!user}
-              className="absolute ml-[320px] pt-2 flex items-center text-gray-500"
-              style={{ pointerEvents: "all" }}
-            >
-              {showPassword ? <EyeOff /> : <Eye />}
-            </button>
-            {errors.password && (
-              <p className="text-red-600">
-                {errors.password?.message as string}
-              </p>
-            )}
-          </div>
+          {mode !== "resetPassword" && (
+            <div className="grid gap-1">
+              <Label className="sr-only" htmlFor="password">
+                Password
+              </Label>
+              <Input
+                id="password"
+                placeholder="Password"
+                type={showPassword ? "text" : "password"}
+                autoCapitalize="none"
+                autoComplete="password"
+                autoCorrect="off"
+                disabled={loading !== null || !!user}
+                {...register("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={loading !== null || !!user}
+                className="absolute ml-[320px] pt-2 flex items-center text-gray-500"
+                style={{ pointerEvents: "all" }}
+              >
+                {showPassword ? <EyeOff /> : <Eye />}
+              </button>
+              {errors.password && (
+                <p className="text-red-600">
+                  {errors.password?.message as string}
+                </p>
+              )}
+            </div>
+          )}
           <Button type="submit" disabled={loading !== null || !!user}>
             {loading === "credentials" && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -197,7 +252,9 @@ export function UserForm({
               ? "Sign Up"
               : mode === "register"
                 ? "Register"
-                : "Sign In"}
+                : mode === "resetPassword"
+                  ? "Reset Password"
+                  : "Sign In"}
           </Button>
           {error && <p className="text-red-600">{error}</p>}
         </div>
@@ -226,7 +283,7 @@ export function UserForm({
             <Button
               variant="outline"
               type="button"
-              disabled={loading !== null}
+              disabled={loading !== null || !!user}
               onClick={() => handleSocialSignIn("google")}
             >
               {loading === "google" ? (
@@ -239,7 +296,7 @@ export function UserForm({
             <Button
               variant="outline"
               type="button"
-              disabled={loading !== null}
+              disabled={loading !== null || !!user}
               onClick={() => handleSocialSignIn("github")}
             >
               {loading === "github" ? (
@@ -280,6 +337,7 @@ export function UserForm({
           <Button
             onClick={() => {
               setUser(null);
+              setShowRegisteredPassword(false);
               reset();
             }}
             className="mt-6"

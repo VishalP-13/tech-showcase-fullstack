@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import React from "react";
-import ResetPasswordForm from "./reset-password-form";
+import { UserForm } from "@/components/user-form";
 
 export default async function ResetPasswordPage() {
   const session = await getServerSession(authOptions);
@@ -19,7 +19,7 @@ export default async function ResetPasswordPage() {
               Enter your email to send reset link to your email
             </p>
           </div>
-          <ResetPasswordForm />
+          <UserForm mode="resetPassword" />
         </div>
       </div>
     </div>

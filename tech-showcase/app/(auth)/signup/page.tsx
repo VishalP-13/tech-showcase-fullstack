@@ -20,7 +20,7 @@ export default async function SignupPage() {
               Enter your details below to create your account
             </p>
           </div>
-          <UserForm mode="signup" />;
+          <UserForm mode="signup" />
           <p className="px-8 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link
