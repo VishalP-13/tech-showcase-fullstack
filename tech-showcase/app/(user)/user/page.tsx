@@ -50,7 +50,7 @@ const UserProfile = () => {
               <Skeleton className="h-4 w-1/2" />
             </CardHeader>
           </div>
-          <div style={{ flexShrink: 0 }}>
+          <div>
             <UserAvatarComponent
               imageUrl=""
               name=""
