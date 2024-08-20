@@ -6,7 +6,6 @@ export async function middleware(req: NextRequest) {
 
   if (!token) {
     const url = new URL("/login", req.url);
-    // url.searchParams.set("callbackUrl", req.url); // Optionally, set the callback URL for post-login redirection
     return NextResponse.redirect(url);
   }
 
