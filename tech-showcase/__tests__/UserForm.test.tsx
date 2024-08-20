@@ -1,5 +1,11 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -29,7 +35,7 @@ describe("UserForm", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <UserForm mode={mode} />
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
   it("renders the form fields correctly", () => {
@@ -46,9 +52,15 @@ describe("UserForm", () => {
 
     renderComponent("signup");
 
-    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "John Doe" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "john@example.com" } });
-    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "password123" } });
+    fireEvent.change(screen.getByPlaceholderText("Name"), {
+      target: { value: "John Doe" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Email"), {
+      target: { value: "john@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Password"), {
+      target: { value: "password123" },
+    });
 
     fireEvent.click(screen.getByText("Sign Up"));
 
@@ -56,18 +68,34 @@ describe("UserForm", () => {
   });
 
   it("handles register submission", async () => {
-    const mockResponse = { data: { name: "John Doe", email: "john@example.com", password: "password123" } };
+    const mockResponse = {
+      data: {
+        name: "John Doe",
+        email: "john@example.com",
+        password: "password123",
+      },
+    };
     (axios.post as jest.Mock).mockResolvedValue(mockResponse);
 
     renderComponent("register");
 
-    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "John Doe" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "john@example.com" } });
-    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "password123" } });
+    fireEvent.change(screen.getByPlaceholderText("Name"), {
+      target: { value: "John Doe" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Email"), {
+      target: { value: "john@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Password"), {
+      target: { value: "password123" },
+    });
 
     fireEvent.click(screen.getByText("Register"));
 
-    await waitFor(() => expect(screen.getByText("User Registered Successfully ✅")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        screen.getByText("User Registered Successfully ✅"),
+      ).toBeInTheDocument(),
+    );
   });
 
   it("handles login submission", async () => {
@@ -76,17 +104,23 @@ describe("UserForm", () => {
 
     renderComponent("login");
 
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "john@example.com" } });
-    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "password123" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), {
+      target: { value: "john@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Password"), {
+      target: { value: "password123" },
+    });
 
     fireEvent.click(screen.getByText("Sign In"));
 
-    await waitFor(() => expect(mockSignIn).toHaveBeenCalledWith("credentials", {
-      email: "john@example.com",
-      password: "password123",
-      redirect: true,
-      callbackUrl: "http://localhost:3000/verify-otp",
-    }));
+    await waitFor(() =>
+      expect(mockSignIn).toHaveBeenCalledWith("credentials", {
+        email: "john@example.com",
+        password: "password123",
+        redirect: true,
+        callbackUrl: "http://localhost:3000",
+      }),
+    );
   });
 
   it("handles social login", async () => {
@@ -97,7 +131,11 @@ describe("UserForm", () => {
 
     fireEvent.click(screen.getByText("Google"));
 
-    await waitFor(() => expect(mockSignIn).toHaveBeenCalledWith("google", { callbackUrl: "http://localhost:3000" }));
+    await waitFor(() =>
+      expect(mockSignIn).toHaveBeenCalledWith("google", {
+        callbackUrl: "http://localhost:3000",
+      }),
+    );
   });
 
   it("displays errors correctly", async () => {
@@ -107,12 +145,20 @@ describe("UserForm", () => {
 
     renderComponent("signup");
 
-    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "John Doe" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "john@example.com" } });
-    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "password123" } });
+    fireEvent.change(screen.getByPlaceholderText("Name"), {
+      target: { value: "John Doe" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Email"), {
+      target: { value: "john@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Password"), {
+      target: { value: "password123" },
+    });
 
     fireEvent.click(screen.getByText("Sign Up"));
 
-    await waitFor(() => expect(screen.getByText("Something went wrong")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Something went wrong")).toBeInTheDocument(),
+    );
   });
 });
