@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { fetchPosts } from "@/lib/actions";
@@ -11,16 +11,30 @@ import { useRouter } from "next/navigation";
 
 const Page = () => {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
 
   const {
     data: posts,
     isLoading,
     isError,
     error,
+    // refetch,
   } = useQuery<Post[]>({
-    queryKey: ["posts"],
-    queryFn: async () => await fetchPosts(),
+    queryKey: ["posts", currentPage],
+    queryFn: () => fetchPosts(currentPage, postsPerPage),
+    // keepPreviousData: true, // Keep previous data while fetching the new page
   });
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
+  };
 
   if (isError) {
     return (
@@ -32,7 +46,7 @@ const Page = () => {
   }
 
   return (
-    <section className="py-24">
+    <section className="py-6">
       <div className="container">
         <div className="flex">
           <h1 className="mb-6 text-3xl font-bold">All Posts</h1>
@@ -65,6 +79,22 @@ const Page = () => {
         ) : (
           <DataTable columns={columns} data={posts || []} />
         )}
+        <div className="flex justify-center space-x-2">
+          <Button
+            variant="outline"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleNextPage}
+            disabled={currentPage === 10}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </section>
   );

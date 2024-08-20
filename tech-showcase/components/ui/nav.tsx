@@ -69,7 +69,10 @@ export function Nav({ links, isCollapsed }: NavProps) {
                     href={link.href}
                     className={cn(
                       buttonVariants({
-                        variant: link.href.split('/')[1] === pathname.split('/')[1] ? "default" : "ghost",
+                        variant:
+                          link.href.split("/")[1] === pathname.split("/")[1]
+                            ? "default"
+                            : "ghost",
                         size: "icon",
                       }),
                       "h-9 w-9",
@@ -94,12 +97,15 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <Link 
+              <Link
                 key={index}
                 href={link.href}
                 className={cn(
                   buttonVariants({
-                    variant: link.href.split('/')[1] === pathname.split('/')[1] ? "default" : "ghost",
+                    variant:
+                      link.href.split("/")[1] === pathname.split("/")[1]
+                        ? "default"
+                        : "ghost",
                     size: "sm",
                   }),
                   link.variant === "default" &&

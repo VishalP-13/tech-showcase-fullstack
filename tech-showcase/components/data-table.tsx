@@ -103,7 +103,7 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border flex-1 overflow-hidden">
+      <div className="rounded-md border  overflow-hidden">
         <ScrollArea className="h-full">
           <Table className="min-w-full">
             <TableHeader>
@@ -154,24 +154,6 @@ export function DataTable<TData, TValue>({
             </TableBody>
           </Table>
         </ScrollArea>
-      </div>
-      <div className="flex items-center justify-center space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
       </div>
     </div>
   );

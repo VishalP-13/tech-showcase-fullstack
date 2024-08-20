@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,8 +15,6 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { useDispatch } from 'react-redux';
-import { login } from "@/redux/userSlice";
 
 const getSchema = (mode: "signup" | "register" | "login" | "resetPassword") => {
   if (mode === "login" || mode === "resetPassword") {
@@ -42,14 +39,12 @@ const getSchema = (mode: "signup" | "register" | "login" | "resetPassword") => {
 
 interface UserFormProps extends React.HTMLAttributes<HTMLDivElement> {
   mode: "signup" | "register" | "login" | "resetPassword";
-  onSuccess?: () => void;
+  // onSuccess?: () => void;
 }
 
 export function UserForm({
   mode,
-  className,
-  onSuccess,
-  ...props
+  // onSuccess,
 }: UserFormProps) {
   const [loading, setLoading] = useState<string | null>(null); // Manage loading state for each action
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +54,6 @@ export function UserForm({
     useState<boolean>(false);
 
   const router = useRouter();
-  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -79,7 +73,7 @@ export function UserForm({
     },
     onSuccess: () => {
       router.push("/");
-      if (onSuccess) onSuccess();
+      // if (onSuccess) onSuccess();
       setLoading(null);
     },
     onError: (err) => {
@@ -99,7 +93,7 @@ export function UserForm({
     },
     onSuccess: (data) => {
       setUser(data);
-      if (onSuccess) onSuccess();
+      // if (onSuccess) onSuccess();
       setLoading(null);
     },
     onError: (err) => {
@@ -111,7 +105,6 @@ export function UserForm({
 
   const loginMutation = useMutation<void, Error, UserFormData>({
     mutationFn: async (data: UserFormData) => {
-      dispatch(login({ email: data.email, password: data.password}))
       await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -120,7 +113,7 @@ export function UserForm({
       });
     },
     onSuccess: () => {
-      if (onSuccess) onSuccess();
+      // if (onSuccess) onSuccess();
       setLoading(null);
     },
     onError: (err) => {
@@ -136,7 +129,7 @@ export function UserForm({
     },
     onSuccess: () => {
       router.push("/login");
-      if (onSuccess) onSuccess();
+      // if (onSuccess) onSuccess();
       setLoading(null);
     },
     onError: (err) => {
@@ -172,7 +165,7 @@ export function UserForm({
   };
 
   return (
-    <div className={cn("grid gap-6", className)} {...props}>
+    <div className="grid gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-2">
           {mode !== "login" && mode !== "resetPassword" && (
@@ -261,7 +254,7 @@ export function UserForm({
       </form>
       {mode === "login" && (
         <>
-          <p className="px-40 text-center text-sm text-muted-foreground pr-0">
+          <p className="px-40 text-center text-sm text-muted-foreground pr-0 ml-11">
             <Link
               href="/reset-password"
               className="underline underline-offset-4 hover:text-primary"
