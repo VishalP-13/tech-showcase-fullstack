@@ -1,7 +1,7 @@
 import React from "react";
 import UserForm from "@/components/user-form";
 
-const UserRegisterPage = async () => {
+const UserRegisterPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="lg:p-8">

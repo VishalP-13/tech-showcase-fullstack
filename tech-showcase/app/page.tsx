@@ -11,7 +11,7 @@ export default function Home() {
         <Image
           src="/hello.gif"
           alt="Animated GIF"
-          className="w-full max-w-6xl"
+          className="w-full max-w-6xl shadow-2xl shadow-blue-950"
           width={1800}
           height={1400}
           priority
