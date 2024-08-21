@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { UserForm } from "@/components/user-form";
+import UserForm from "@/components/user-form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 jest.mock("axios");
