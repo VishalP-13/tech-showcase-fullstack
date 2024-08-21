@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 
 export const useDebounce = (value, delay = 400) => {
-  const [debouncedValue, setDebouncedValue] = useState(value)
+  const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(
     () => {
       // Update debounced value after delay
       const handler = setTimeout(() => {
-        setDebouncedValue(value)
-      }, delay)
+        setDebouncedValue(value);
+      }, delay);
       return () => {
-        clearTimeout(handler)
-      }
+        clearTimeout(handler);
+      };
     },
-    [value, delay] // Only re-call effect if value or delay changes
-  )
-  return debouncedValue
-}
+    [value, delay], // Only re-call effect if value or delay changes
+  );
+  return debouncedValue;
+};

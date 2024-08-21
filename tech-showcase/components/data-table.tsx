@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useDebounce } from "@/hooks/debounce"
+import { useDebounce } from "@/hooks/debounce";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
