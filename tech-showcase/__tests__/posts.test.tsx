@@ -24,7 +24,7 @@ const renderPage = () =>
   render(
     <QueryClientProvider client={queryClient}>
       <Page />
-    </QueryClientProvider>
+    </QueryClientProvider>,
   );
 
 describe("Posts Page Integration Tests", () => {
@@ -70,7 +70,7 @@ describe("Posts Page Integration Tests", () => {
         columns,
         data: mockPosts,
       }),
-      expect.anything()
+      expect.anything(),
     );
   });
 
@@ -106,11 +106,11 @@ describe("Posts Page Integration Tests", () => {
         columns,
         data: mockPostsPage2,
       }),
-      expect.anything()
+      expect.anything(),
     );
   });
 
-  it('navigates to user registration page when button is clicked', async () => {
+  it("navigates to user registration page when button is clicked", async () => {
     const mockPosts = [
       { id: 1, title: "Post 1", content: "Content 1" },
       { id: 2, title: "Post 2", content: "Content 2" },
@@ -118,9 +118,11 @@ describe("Posts Page Integration Tests", () => {
 
     (fetchPosts as jest.Mock).mockResolvedValueOnce(mockPosts);
 
-    renderPage()
+    renderPage();
 
-    fireEvent.click(screen.getByText('Register User'));
-    await waitFor(() => expect(mockRouterPush).toHaveBeenCalledWith("/posts/user"));
+    fireEvent.click(screen.getByText("Register User"));
+    await waitFor(() =>
+      expect(mockRouterPush).toHaveBeenCalledWith("/posts/user"),
+    );
   });
 });

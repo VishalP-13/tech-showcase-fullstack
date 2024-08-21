@@ -41,9 +41,7 @@ interface UserFormProps extends React.HTMLAttributes<HTMLDivElement> {
   mode: "signup" | "register" | "login" | "resetPassword";
 }
 
-export function UserForm({
-  mode,
-}: UserFormProps) {
+export function UserForm({ mode }: UserFormProps) {
   const [loading, setLoading] = useState<string | null>(null); // Manage loading state for each action
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<UserFormData | null>(null);
