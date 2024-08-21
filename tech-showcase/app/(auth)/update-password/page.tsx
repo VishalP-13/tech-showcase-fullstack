@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import UpdatePasswordForm from "./change-password-form";
 
-export default async function UpdatePasswordPage() {
+const UpdatePasswordPage = async () => {
   const session = await getServerSession(authOptions);
   if (session?.user) redirect("/");
   return (
@@ -24,4 +24,6 @@ export default async function UpdatePasswordPage() {
       </div>
     </div>
   );
-}
+};
+
+export default UpdatePasswordPage;

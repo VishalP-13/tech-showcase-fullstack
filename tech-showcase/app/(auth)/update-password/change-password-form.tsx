@@ -27,7 +27,7 @@ type UpdatePasswordData = {
   confirmPassword: string;
 };
 
-export default function UpdatePasswordForm() {
+const UpdatePasswordForm = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -115,4 +115,6 @@ export default function UpdatePasswordForm() {
       </form>
     </div>
   );
-}
+};
+
+export default UpdatePasswordForm;

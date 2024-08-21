@@ -2,9 +2,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import React from "react";
-import { UserForm } from "@/components/user-form";
+import UserForm from "@/components/user-form";
 
-export default async function ResetPasswordPage() {
+const ResetPasswordPage = async () => {
   const session = await getServerSession(authOptions);
   if (session?.user) redirect("/");
   return (
@@ -24,4 +24,6 @@ export default async function ResetPasswordPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ResetPasswordPage;

@@ -4,9 +4,9 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import { UserForm } from "@/components/user-form";
+import UserForm from "@/components/user-form";
 
-export default async function AuthenticationPage() {
+const AuthenticationPage = async () => {
   const session = await getServerSession(authOptions);
   if (session?.user) redirect("/");
   return (
@@ -44,4 +44,6 @@ export default async function AuthenticationPage() {
       </div>
     </div>
   );
-}
+};
+
+export default AuthenticationPage;

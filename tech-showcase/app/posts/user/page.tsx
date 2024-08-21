@@ -1,7 +1,7 @@
 import React from "react";
-import { UserForm } from "@/components/user-form";
+import UserForm from "@/components/user-form";
 
-export default async function UserRegisterPage() {
+const UserRegisterPage = async () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="lg:p-8">
@@ -19,4 +19,6 @@ export default async function UserRegisterPage() {
       </div>
     </div>
   );
-}
+};
+
+export default UserRegisterPage;
