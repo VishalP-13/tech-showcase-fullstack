@@ -1,4 +1,4 @@
-// import Image from "next/image";
+import Image from "next/image";
 import React from "react";
 
 export default function Home() {
@@ -7,16 +7,16 @@ export default function Home() {
       <h1 className="text-3xl font-sans tracking-tight text-gray-900 mt-[150px]">
         Welcome to the Posts Blog!
       </h1>
-      {/* <div className="flex flex-col items-center justify-center mt-8">
+      <div className="flex flex-col items-center justify-center mt-8">
         <Image
           src="/hello.gif"
           alt="Animated GIF"
-          className="w-full max-w-6xl" // Tailwind CSS classes for responsive image
+          className="w-full max-w-6xl"
           width={1800}
           height={1400}
           priority
         />
-      </div> */}
+      </div>
     </div>
   );
 }

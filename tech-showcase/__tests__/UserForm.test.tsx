@@ -31,7 +31,7 @@ describe("UserForm", () => {
 
   afterEach(cleanup);
 
-  const renderComponent = (mode: "signup" | "register" | "login") =>
+  const renderPage = (mode: "signup" | "register" | "login") =>
     render(
       <QueryClientProvider client={queryClient}>
         <UserForm mode={mode} />
@@ -39,7 +39,7 @@ describe("UserForm", () => {
     );
 
   it("renders the form fields correctly", () => {
-    renderComponent("signup");
+    renderPage("signup");
 
     expect(screen.getByPlaceholderText("Name")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe("UserForm", () => {
     const mockResponse = { data: { message: "User registered successfully" } };
     (axios.post as jest.Mock).mockResolvedValue(mockResponse);
 
-    renderComponent("signup");
+    renderPage("signup");
 
     fireEvent.change(screen.getByPlaceholderText("Name"), {
       target: { value: "John Doe" },
@@ -77,7 +77,7 @@ describe("UserForm", () => {
     };
     (axios.post as jest.Mock).mockResolvedValue(mockResponse);
 
-    renderComponent("register");
+    renderPage("register");
 
     fireEvent.change(screen.getByPlaceholderText("Name"), {
       target: { value: "John Doe" },
@@ -102,7 +102,7 @@ describe("UserForm", () => {
     const mockSignIn = jest.fn().mockResolvedValue({});
     (signIn as jest.Mock).mockImplementation(mockSignIn);
 
-    renderComponent("login");
+    renderPage("login");
 
     fireEvent.change(screen.getByPlaceholderText("Email"), {
       target: { value: "john@example.com" },
@@ -127,7 +127,7 @@ describe("UserForm", () => {
     const mockSignIn = jest.fn().mockResolvedValue({});
     (signIn as jest.Mock).mockImplementation(mockSignIn);
 
-    renderComponent("login");
+    renderPage("login");
 
     fireEvent.click(screen.getByText("Google"));
 
@@ -143,7 +143,7 @@ describe("UserForm", () => {
       response: { data: { message: "Something went wrong" } },
     });
 
-    renderComponent("signup");
+    renderPage("signup");
 
     fireEvent.change(screen.getByPlaceholderText("Name"), {
       target: { value: "John Doe" },

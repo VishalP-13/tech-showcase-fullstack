@@ -19,11 +19,9 @@ const Page = () => {
     isLoading,
     isError,
     error,
-    // refetch,
   } = useQuery<Post[]>({
     queryKey: ["posts", currentPage],
     queryFn: () => fetchPosts(currentPage, postsPerPage),
-    // keepPreviousData: true, // Keep previous data while fetching the new page
   });
 
   const handleNextPage = () => {

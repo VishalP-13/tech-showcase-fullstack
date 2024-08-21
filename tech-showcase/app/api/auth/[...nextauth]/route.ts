@@ -4,7 +4,7 @@ import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 
-// Define the authentication providers
+// Authentication providers
 const authProviders = [
   GoogleProvider({
     clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -57,7 +57,7 @@ const authProviders = [
   }),
 ];
 
-// Define the NextAuth options
+// NextAuth options
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt" as SessionStrategy,

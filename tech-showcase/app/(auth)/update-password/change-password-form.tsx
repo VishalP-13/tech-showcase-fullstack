@@ -4,7 +4,6 @@ import * as React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,13 +27,7 @@ type UpdatePasswordData = {
   confirmPassword: string;
 };
 
-interface UpdatePasswordFormProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
-
-export default function UpdatePasswordForm({
-  className,
-  ...props
-}: UpdatePasswordFormProps) {
+export default function UpdatePasswordForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -52,7 +45,6 @@ export default function UpdatePasswordForm({
     setIsLoading(true);
     setError(null);
     try {
-      // Assuming you have a valid token in the query params
       const token = new URLSearchParams(window.location.search).get("token");
       if (!token) {
         throw new Error("Invalid or missing token");
@@ -63,7 +55,6 @@ export default function UpdatePasswordForm({
         newPassword: data.password,
       });
 
-      // Redirect to a success page or show a success message
       router.push("/login");
     } catch (err) {
       const error = err as ErrorResponse;
@@ -74,7 +65,7 @@ export default function UpdatePasswordForm({
   };
 
   return (
-    <div className={cn("grid gap-6", className)} {...props}>
+    <div className="grid gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-2">
           <div className="grid gap-1">

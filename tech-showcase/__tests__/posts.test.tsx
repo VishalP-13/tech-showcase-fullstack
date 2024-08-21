@@ -109,4 +109,18 @@ describe("Posts Page Integration Tests", () => {
       expect.anything()
     );
   });
+
+  it('navigates to user registration page when button is clicked', async () => {
+    const mockPosts = [
+      { id: 1, title: "Post 1", content: "Content 1" },
+      { id: 2, title: "Post 2", content: "Content 2" },
+    ];
+
+    (fetchPosts as jest.Mock).mockResolvedValueOnce(mockPosts);
+
+    renderPage()
+
+    fireEvent.click(screen.getByText('Register User'));
+    await waitFor(() => expect(mockRouterPush).toHaveBeenCalledWith("/posts/user"));
+  });
 });

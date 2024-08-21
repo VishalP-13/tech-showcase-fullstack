@@ -39,12 +39,10 @@ const getSchema = (mode: "signup" | "register" | "login" | "resetPassword") => {
 
 interface UserFormProps extends React.HTMLAttributes<HTMLDivElement> {
   mode: "signup" | "register" | "login" | "resetPassword";
-  // onSuccess?: () => void;
 }
 
 export function UserForm({
   mode,
-  // onSuccess,
 }: UserFormProps) {
   const [loading, setLoading] = useState<string | null>(null); // Manage loading state for each action
   const [error, setError] = useState<string | null>(null);
@@ -73,7 +71,6 @@ export function UserForm({
     },
     onSuccess: () => {
       router.push("/");
-      // if (onSuccess) onSuccess();
       setLoading(null);
     },
     onError: (err) => {
@@ -93,7 +90,6 @@ export function UserForm({
     },
     onSuccess: (data) => {
       setUser(data);
-      // if (onSuccess) onSuccess();
       setLoading(null);
     },
     onError: (err) => {
@@ -113,7 +109,6 @@ export function UserForm({
       });
     },
     onSuccess: () => {
-      // if (onSuccess) onSuccess();
       setLoading(null);
     },
     onError: (err) => {
@@ -129,7 +124,6 @@ export function UserForm({
     },
     onSuccess: () => {
       router.push("/login");
-      // if (onSuccess) onSuccess();
       setLoading(null);
     },
     onError: (err) => {
