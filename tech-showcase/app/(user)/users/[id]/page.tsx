@@ -21,7 +21,7 @@ type Params = {
   };
 };
 
-export default async function Index({ params: { id } }: Params) {
+const Index = ({ params: { id } }: Params) => {
   const router = useRouter();
 
   const {
@@ -169,4 +169,6 @@ export default async function Index({ params: { id } }: Params) {
       )}
     </div>
   );
-}
+};
+
+export default Index;
