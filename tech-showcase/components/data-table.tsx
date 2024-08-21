@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useDebounce } from "@/hooks/debounce"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -47,6 +48,9 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [filterValue, setFilterValue] = useState<string>("");
+
+  const debouncedFilterValue = useDebounce(filterValue);
 
   const table = useReactTable({
     data,
@@ -65,15 +69,17 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  useEffect(() => {
+    table.getColumn("title")?.setFilterValue(debouncedFilterValue);
+  }, [debouncedFilterValue, table]);
+
   return (
     <div className="w-full flex flex-col h-[calc(100vh-188px)]">
       <div className="flex items-center py-4 flex-wrap">
         <Input
           placeholder="Filter Title..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
+          value={filterValue}
+          onChange={(event) => setFilterValue(event.target.value)}
           className="max-w-sm w-full sm:w-auto mb-2 sm:mb-0"
         />
         <DropdownMenu>
